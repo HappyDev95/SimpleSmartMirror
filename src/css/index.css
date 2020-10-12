@@ -1,0 +1,74 @@
+html {
+    cursor: none;
+    overflow: hidden;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #708090;
+    display: flex;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.container {
+    width: 50%;
+    height: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+.left-container {
+    float: left;
+    width: 100%;
+    height: 33%;
+    padding: 0;
+    margin: 0;
+    border: solid;
+    border-color: darkblue;
+}
+
+.center-container {
+    float: left;
+    width: 100%;
+    height: 33%;
+    padding: 0;
+    margin: 0;
+    border: solid;
+    border-color: coral;
+}
+
+.right-container {
+    float: right;
+    width: 100%;
+    height: 33%;
+    padding: 0;
+    margin: 0;
+    border: solid;
+    border-color: forestgreen;
+}
+
+#topLeftContainer {
+    height: 100px;
+}
+
+#centerLeftContainer {
+    width: 30%;
+    height: 36%;
+    text-align: left;
+    padding: 15px 30px;
+}
+
+#botLeftContainer {
+    height: 49%;
+}

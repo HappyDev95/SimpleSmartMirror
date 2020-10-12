@@ -1,0 +1,25 @@
+#calendarContainer {
+    display: inline-table;
+    padding: 25px;
+}
+
+#calendarHeader {
+    font-size: 30px;
+}
+
+#calendar {
+    table-layout: fixed;
+    height: 235px;
+    width: 490px;
+    font-weight: bold;
+}
+
+#calendarTodaysDate {
+    color: red;
+    background-color: #C9C9B1;
+    border-radius: 50%;
+    height: 73%;
+    width: 57%;
+    text-align: center;
+    display: inline-block;
+}

@@ -1,0 +1,29 @@
+#weatherContainer {
+    display: inline-block;
+    text-align: left;
+    height: 300px;
+}
+
+#weatherHeaderContainer {
+    display: flex;
+    height: 100px;
+    width: 110px;
+}
+
+#currentTempHeader {
+    font-size: 35px;
+    margin: 9px auto;
+    padding-left: 20px;
+}
+
+#weatherProperty {
+    margin: 0;
+    padding: 2px;
+    border: 0;
+    font-size: 19px;
+}
+
+#weatherMainLogo {
+    height: 100%;
+    width: 100%;
+}

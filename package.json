@@ -1,0 +1,14 @@
+{
+  "name": "the_smartest_of_mirrors",
+  "version": "1.0.0",
+  "description": "smart mirror project",
+  "main": "src/js/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "HappyDev95",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^10.1.3"
+  }
+}
