@@ -14,3 +14,6 @@ Node Libraries Needed:
 	- For global css see /src/css
 	- For global images see /src/images
 	 -For non-component related javascript see /src/js
+
+# To Run:
+	- Execute Command 'npm start' in terminal window
