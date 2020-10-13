@@ -6,14 +6,22 @@ const logger = require('./log.js');
 
 function createWindow() {
     // Create the browser window.
-    const win = new BrowserWindow(config.electronBrowserOption);
+    const mainWindow = new BrowserWindow(config.electronBrowserOption);
+    
+    let splash = new BrowserWindow(config.electronBrowserOption);
+    splash.loadFile(app.getAppPath() + config.splashScreen);
+    logger.log(`Path to splash screen is ${app.getAppPath()}${config.splashScreen}`);
 
-    // and load the index.html of the app.
-    logger.log(`Path to application is ${app.getAppPath()}${config.index}`);
-    win.loadFile(app.getAppPath() + config.index);
+    setTimeout(function loadMainWin() {
+        // and load the index.html of the app and splash screen
+        logger.log(`Path to application is ${app.getAppPath()}${config.index}`);
+        mainWindow.loadFile(app.getAppPath() + config.index);
+        logger.logDebug("Destroying splash screen");
+        splash.destroy();
+    }, 6000);
 }
 
-app.on("ready", function () {
+app.on("ready", function launchApp() {
     logger.log("Launching application.");
     createWindow();
 });

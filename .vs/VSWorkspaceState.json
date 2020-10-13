@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\components",
+    "\\src\\components\\clock"
   ],
+  "SelectedNode": "\\src\\components\\clock\\clock.js",
   "PreviewInSolutionExplorer": false
 }

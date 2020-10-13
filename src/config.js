@@ -44,6 +44,7 @@ const config = {
         cloudyNight: `${IMG_DIR}/cloudyNight.svg`,
         moon: `${IMG_DIR}/moon.svg`,
         rain: `${IMG_DIR}/rain.svg`,
+        startup: `${IMG_DIR}/startup.svg`,
         sun: `${IMG_DIR}/sun.svg`,
         sunClouds: `${IMG_DIR}/sunClouds.svg`
     },
@@ -53,6 +54,7 @@ const config = {
         "July", "August", "September",
         "October", "November", "December"
     ],
+    splashScreen: "/src/splash.html",
     weatherApiBase: "https://api.openweathermap.org/data/",
     weatherApiEndpoint: "weather",
     //PASTE API KEY HERE
