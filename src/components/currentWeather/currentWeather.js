@@ -58,7 +58,7 @@
         //exclude the current hour and get the next 10 hours                                                                     1
         for (let i = 1; i < 12; i++) {
             let currentWeather = {};
-            currentWeather.time = util.convertDateToEst(data.hourly[i].dt);
+            currentWeather.time = util.convertDateToEstHours(data.hourly[i].dt);
             currentWeather.temp = data.hourly[i].temp;
             currentWeather.feelsLike = data.hourly[i].feels_like;
             currentWeather.clouds = data.hourly[i].clouds;
@@ -93,7 +93,7 @@
 
                 switch (property) {
                     case "time":
-                        timeCol.innerText += hourlyObj[property];
+                        timeCol.innerText += util.formatHours(hourlyObj[property]) + ":00";
                         break;
                     case "temp":
                         currTempHourly.innerText += `${hourlyObj[property].toFixed(0)}`;
@@ -110,10 +110,10 @@
                         let imgPath;
 
                         //TODO: This is broken, come back and fix it
-                        if (hourlyObj["time"] < currentSunriseSunset.sunrise && hourlyObj["time"] > currentSunriseSunset.sunset) {
+                        if (hourlyObj["time"] < currentSunriseSunset.sunrise) {
                             imgPath = util.getImageSrc(hourlyObj[property], true);
                         } else {
-                            imgPath = util.getImageSrc(hourlyObj[property], hourlyObj["description"],false);
+                            imgPath = util.getImageSrc(hourlyObj[property], false, hourlyObj["description"]);
                         }
 
                         img.src = imgPath;

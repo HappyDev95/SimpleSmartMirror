@@ -1,6 +1,6 @@
 #weatherTable {
     width: 700px;
-    margin: 34px auto;
+    margin: 15px 0;
 }
 
 #time {
@@ -21,6 +21,7 @@
 #currentWeatherColumnImg {
     width: 30px;
     height: 30px;
+    padding: 0 12px;
 }
 
 #currentTempHourly {
@@ -30,6 +31,6 @@
 }
 
 #currentWeatherColumnData {
-    width: 200px;
+    width: 155px;
     height: 34px;
 }

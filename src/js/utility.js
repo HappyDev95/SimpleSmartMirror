@@ -54,6 +54,29 @@ function convertDateToEst(unixTimestamp) {
     return stripAmPm(date);
 }
 
+function convertDateToEstHours(unixTimestamp) {
+    if (unixTimestamp === undefined || unixTimestamp === null) {
+        logger.logError("Unix Timestamp is undefined or null");
+        return;
+    }
+
+    //unixTimestamp is in seconds, convert so milliseconds for Date constructor
+    let date = new Date(unixTimestamp * 1000);
+
+    return date.getHours();
+}
+
+function formatHours(hours) {
+    //12am == hour 0 so return 12
+    if (hours == 0) {
+        return 12;
+    } else if (hours < 12) {
+        return hours;
+    } else {
+        return hours - 12;
+    }
+}
+
 function stripAmPm(date) {
     if (date.includes("AM")) {
         return date.replace("AM", "");
@@ -64,8 +87,9 @@ function stripAmPm(date) {
 
 /*
  * optional parameter nightTime boolean if true, then it is nighttime.
+ * optional parameter desc 
 */
-function getImageSrc(prop, desc, nightTime) {
+function getImageSrc(prop, nightTime, desc) {
     let retImg;
     switch (prop) {
         case "Clear":
@@ -74,11 +98,9 @@ function getImageSrc(prop, desc, nightTime) {
             } else {
                 retImg = config.image.sun;
             }
-            console.log("path to image is" + retImg);
             return retImg;
             break;
         case "Clouds":
-            console.log("path to image is" + config.image.clouds);
             if (nightTime) {
                 retImg = config.image.cloudyNight;
             } else if (desc == "broken clouds") {
@@ -89,11 +111,9 @@ function getImageSrc(prop, desc, nightTime) {
             return retImg;
             break;
         case "Rain":
-            console.log("path to image is" + config.image.rain);
             return config.image.rain;
             break;
         case "Thunderstorm":
-            console.log("path to image is" + config.image.rain);
             return config.image.rain;
             break;
         default:
@@ -105,6 +125,8 @@ function getImageSrc(prop, desc, nightTime) {
 module.exports = {
     resolvePath,
     convertDateToEst,
+    convertDateToEstHours,
     getImageSrc,
+    formatHours,
     stripAmPm
 }
