@@ -2,10 +2,11 @@ const IMG_DIR = "C:/My-Projects/SmartMirror/src/images";
 
 const config = {
     components: [
+        "calendar",
         "clock",
-        "weather",
         "currentWeather",
-        "calendar"
+        "weather",
+        "strava"
     ],
     //PLEASE FIX THIS PATHING
     componentsDir: "C:/My-Projects/SmartMirror/src/components/",
@@ -55,6 +56,16 @@ const config = {
         "October", "November", "December"
     ],
     splashScreen: "/src/splash.html",
+    strava: {
+        //REPLACE ALL CLIENT ID, SECRET, AND REFRESH WITH YOUR OWN
+        activities_per_week: "?before=1602590399&after=1602460800",
+        client_id: "",
+        client_secret: "",
+        grant_type: "refresh_token",
+        strava_refreshToken: ""
+    },
+    stravaAtheleteEndpoint: "https://www.strava.com/api/v3/athlete/activities",
+    stravaTokenRefreshEndpoint: "https://www.strava.com/oauth/token",
     weatherApiBase: "https://api.openweathermap.org/data/",
     weatherApiEndpoint: "weather",
     //PASTE API KEY HERE

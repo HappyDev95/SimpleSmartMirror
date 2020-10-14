@@ -15,10 +15,9 @@
                         processResponse(JSON.parse(this.response));
                         renderWeatherHtml();
                     } else {
-                        logger.logError(`Something went wrong with the HTTP request... try again`);
+                        logger.logError(`Error making HTTP request to ${reqUrl}`);
                     }
-                } else {
-                    logger.logError(`Error making HTTP request to ${reqUrl}`);
+
                 }
             };
             request.send();
