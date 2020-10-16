@@ -1,0 +1,51 @@
+#weeklyActivitesImg, #weeklyMilageImg, #weeklyTotalMinutesImg {
+    height: 55px;
+    width: auto;
+}
+
+#stravaTopContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#stravaTopContainer, #stravaBotContainer {
+    height: 50%;
+    width: 100%;
+}
+
+#weeklyHeader {
+    margin: 0;
+}
+
+/* Adds undline after header */
+#weeklyHeader::after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 39%;
+    padding-top: 3px;
+    border-bottom: 2px solid black;
+}
+
+#weeklyDiv {
+    width: 23%;
+    padding-top: 32px;
+}
+
+#weeklyStatHeader {
+    margin: 0 0 5px 0;
+}
+
+#weeklyStatHeader::after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 39%;
+    padding-top: 3px;
+    border-bottom: 1px solid black;
+}
+
+#statistic {
+    margin: 0;
+    font-size: 25px
+}

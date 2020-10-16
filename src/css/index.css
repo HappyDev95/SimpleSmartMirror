@@ -72,3 +72,11 @@ body {
 #botLeftContainer {
     height: 49%;
 }
+
+#topRightContainer {
+    height: 50%;
+}
+
+#centerRigthContainer, #botRightContainer {
+    height: 25%;
+}

@@ -62,10 +62,27 @@
      */
     function getStravaData() {
         try {
+            let beforeTime = new Date();
+            let afterTime = new Date();
+
+            //if Sunday
+            if (afterTime.getDay() == 0) {
+                afterTime.setDate(afterTime.getDate() - 6);
+            } else {
+                afterTime.setDate(afterTime.getDate() - afterTime.getDay() + 1);
+                afterTime.setHours(0, 0, 0);
+            }
+
+            let before = (beforeTime.getTime() / 1000).toFixed(0);
+            let after = (afterTime.getTime() / 1000).toFixed(0);
+
+            //console.log("before" + before);
+            //console.log("after  - " + after);
+
             let request = new XMLHttpRequest();
             request.open(
                 "GET",
-                `${config.stravaAtheleteEndpoint}${config.strava.activities_per_week}`,
+                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}`,
                 true);
 
             console.log("shortLivedAcces = " + shortLivedAccessToken);
@@ -95,7 +112,7 @@
             return;
         }
 
-        //each element in the array is an activty that was recorded
+        //each element in the array is an activity that was recorded
         data.forEach(function parseActivityObj(activity) {
             if (activity.type.toLowerCase() === "run") {
 
@@ -132,33 +149,86 @@
         config.strava.strava_refreshToken = data.refresh_token;
     }
 
+    //function calculateTimeInWeek(currTime) {
+    //    //if day is Sunday
+    //    if (currTime.getDay() == 0) {
+    //        return currTime.getDate() - 7;
+    //    }  else {
+    //        return currTime.getDate() - currTime.getDay();
+    //    }
+    //}
+
     function renderStravaHtml() {
         logger.logDebug("Rendering the Strava Component HTML DOM");
 
+        let weeklyHeader = document.createElement("h1")
+        weeklyHeader.id = "weeklyHeader";
+        weeklyHeader.innerText = "This Week's Performance"
+        document.getElementById("topRightContainer").appendChild(weeklyHeader);
+
+        let stravaTopContainer = document.createElement("div");
+        stravaTopContainer.id = "stravaTopContainer";
+        let stravaBotContainer = document.createElement("div");
+        stravaBotContainer.id = "stravaBotContainer";
+        document.getElementById("topRightContainer").appendChild(stravaTopContainer);
+        document.getElementById("topRightContainer").appendChild(stravaBotContainer);
 
         let weeklyActivitiesContainer = document.createElement("div");
+        weeklyActivitiesContainer.id = "weeklyDiv";
         let weeklyMilageContainer = document.createElement("div");
+        weeklyMilageContainer.id = "weeklyDiv";
         let weeklyTotalMinutesContainer = document.createElement("div");
+        weeklyTotalMinutesContainer.id = "weeklyDiv";
 
-        let weeklyActivitesHeader = document.createElement("h1");
-        let weeklyMilageHeader = document.createElement("h1");
-        let weeklyTotalMinutesHeader = document.createElement("h1");
-
+        let weeklyActivitesHeader = document.createElement("h2");
+        let weeklyMilageHeader = document.createElement("h2");
+        let weeklyTotalMinutesHeader = document.createElement("h2");
+        weeklyActivitesHeader.id = "weeklyStatHeader";
+        weeklyMilageHeader.id = "weeklyStatHeader";
+        weeklyTotalMinutesHeader.id = "weeklyStatHeader";
         weeklyActivitesHeader.innerText = "Total Runs";
         weeklyMilageHeader.innerText = "Total Milage";
         weeklyTotalMinutesHeader.innerText = "Total Minutes";
 
-        document.getElementById("topRightContainer").appendChild(weeklyActivitiesContainer);
-        document.getElementById("topRightContainer").appendChild(weeklyMilageContainer);
-        document.getElementById("topRightContainer").appendChild(weeklyTotalMinutesContainer);
+        let weeklyActivitesImg = document.createElement("img");
+        let weeklyMilageImg = document.createElement("img");
+        let weeklyTotalMinutesImg = document.createElement("img");
+        weeklyActivitesImg.src = config.image.runner;
+        weeklyMilageImg.src = config.image.road; 
+        weeklyTotalMinutesImg.src = config.image.stopwatch;
+        weeklyActivitesImg.id = "weeklyActivitesImg";
+        weeklyMilageImg.id = "weeklyMilageImg";
+        weeklyTotalMinutesImg.id = "weeklyTotalMinutesImg";
+
+        stravaTopContainer.appendChild(weeklyActivitiesContainer);
+        stravaTopContainer.appendChild(weeklyMilageContainer);
+        stravaTopContainer.appendChild(weeklyTotalMinutesContainer);
 
         weeklyActivitiesContainer.appendChild(weeklyActivitesHeader);
         weeklyMilageContainer.appendChild(weeklyMilageHeader);
         weeklyTotalMinutesContainer.appendChild(weeklyTotalMinutesHeader);
 
-        weeklyActivitiesContainer.appendChild(document.createTextNode(weeklyStats.weeklyRunsTotal));
-        weeklyMilageContainer.appendChild(document.createTextNode(weeklyStats.weeklyMilage.toFixed(2)));
-        weeklyTotalMinutesContainer.appendChild(document.createTextNode(weeklyStats.weeklyTotalMinutes));
+        weeklyActivitiesContainer.appendChild(weeklyActivitesImg);
+        weeklyMilageContainer.appendChild(weeklyMilageImg);
+        weeklyTotalMinutesContainer.appendChild(weeklyTotalMinutesImg);
+
+        weeklyMilageContainer.appendChild(document.createElement("br"));
+        weeklyActivitiesContainer.appendChild(document.createElement("br"));
+        weeklyTotalMinutesContainer.appendChild(document.createElement("br"));
+
+        let runs = document.createElement("h3");
+        let mileage = document.createElement("h3");
+        let totalMinutes = document.createElement("h3");
+        runs.id = "statistic";
+        mileage.id = "statistic";
+        totalMinutes.id = "statistic";
+        runs.innerText = weeklyStats.weeklyRunsTotal;
+        mileage.innerText = weeklyStats.weeklyMilage.toFixed(2);
+        totalMinutes.innerText = weeklyStats.weeklyTotalMinutes;
+
+        weeklyActivitiesContainer.appendChild(runs)
+        weeklyMilageContainer.appendChild(mileage);
+        weeklyTotalMinutesContainer.appendChild(totalMinutes);
     }
 
     refreshAccessToken();
