@@ -2,10 +2,11 @@
 ElectronJS app to be hosted on RaspberryPI.
 
 Node Libraries Needed:
-- electronJS
+- chart.js
 
 # API Keys Needed:
  - https://api.openweathermap.org/data/
+ - https://www.strava.com/api/v3/
 
  # File Structure:
 	- Components are placed in /src/components directory.

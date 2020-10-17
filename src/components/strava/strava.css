@@ -11,6 +11,7 @@
 #stravaTopContainer, #stravaBotContainer {
     height: 50%;
     width: 100%;
+    display: flex
 }
 
 #weeklyHeader {
@@ -54,7 +55,15 @@
     BEGIN STYLING FOR CHARTS
 */
 
-#weeklyRunCanvas, #monthlyRunCanvas, #yearlyRunCanvas {
-    height: 156px !important;
-    width: 174px !important;
+#weeklyRunGraphContainer, #monthlyRunGraphContainer, #yearlyRunGraphContainer {
+    margin: 0 20px;
+    height: 140px;
+}
+
+#weeklyRunGraphContainer {
+    width: 175px;
+}
+
+#monthlyRunGraphContainer {
+    width: 275px;
 }
