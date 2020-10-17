@@ -49,3 +49,12 @@
     margin: 0;
     font-size: 25px
 }
+
+/*
+    BEGIN STYLING FOR CHARTS
+*/
+
+#weeklyRunCanvas, #monthlyRunCanvas, #yearlyRunCanvas {
+    height: 156px !important;
+    width: 174px !important;
+}

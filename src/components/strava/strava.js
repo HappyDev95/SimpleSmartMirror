@@ -4,7 +4,8 @@
     var weeklyStats = {
         weeklyRunsTotal: null,
         weeklyMilage: null,
-        weeklyTotalMinutes: null
+        weeklyTotalMinutes: null,
+        weeklyArr: [null, null, null, null, null, null, null]
     };
 
     function refreshAccessToken() {
@@ -69,6 +70,7 @@
             if (afterTime.getDay() == 0) {
                 afterTime.setDate(afterTime.getDate() - 6);
             } else {
+                //if M - Sa
                 afterTime.setDate(afterTime.getDate() - afterTime.getDay() + 1);
                 afterTime.setHours(0, 0, 0);
             }
@@ -76,16 +78,11 @@
             let before = (beforeTime.getTime() / 1000).toFixed(0);
             let after = (afterTime.getTime() / 1000).toFixed(0);
 
-            //console.log("before" + before);
-            //console.log("after  - " + after);
-
             let request = new XMLHttpRequest();
             request.open(
                 "GET",
                 `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}`,
                 true);
-
-            console.log("shortLivedAcces = " + shortLivedAccessToken);
 
             request.setRequestHeader("Authorization", `Bearer ${shortLivedAccessToken}`);
             request.onreadystatechange = function () {
@@ -113,14 +110,19 @@
         }
 
         //each element in the array is an activity that was recorded
-        data.forEach(function parseActivityObj(activity) {
+        data.forEach(function parseActivityObj(activity, idx) {
             if (activity.type.toLowerCase() === "run") {
+
+                //TODO: use activity.start_date property to compare to today.
+                //use this to find the activities for Monday - Sunday
+                //store the activities for each day of the week in the activty array
 
                 weeklyStats.weeklyRunsTotal += 1;
 
                 if (activity.distance != undefined) {
                     //convert meters to miles
                     weeklyStats.weeklyMilage += (activity.distance * 0.000621371);
+                    weeklyStats.weeklyArr[idx] += parseFloat((activity.distance * 0.000621371).toFixed(0));
                 }
 
                 if (activity.elapsed_time != undefined) {
@@ -132,7 +134,8 @@
 
         console.log("weeklyStats");
         console.log(weeklyStats);
-        renderStravaHtml();
+        renderWeeklyStatsHtml();
+        renderBarChartsHtml();
     }
 
     function processRefreshTokenResponse(data) {
@@ -149,16 +152,7 @@
         config.strava.strava_refreshToken = data.refresh_token;
     }
 
-    //function calculateTimeInWeek(currTime) {
-    //    //if day is Sunday
-    //    if (currTime.getDay() == 0) {
-    //        return currTime.getDate() - 7;
-    //    }  else {
-    //        return currTime.getDate() - currTime.getDay();
-    //    }
-    //}
-
-    function renderStravaHtml() {
+    function renderWeeklyStatsHtml() {
         logger.logDebug("Rendering the Strava Component HTML DOM");
 
         let weeklyHeader = document.createElement("h1")
@@ -224,14 +218,79 @@
         totalMinutes.id = "statistic";
         runs.innerText = weeklyStats.weeklyRunsTotal;
         mileage.innerText = weeklyStats.weeklyMilage.toFixed(2);
-        totalMinutes.innerText = weeklyStats.weeklyTotalMinutes;
+        totalMinutes.innerText = weeklyStats.weeklyTotalMinutes.toFixed(0);
 
         weeklyActivitiesContainer.appendChild(runs)
         weeklyMilageContainer.appendChild(mileage);
         weeklyTotalMinutesContainer.appendChild(totalMinutes);
     }
 
+    function renderBarChartsHtml() {
+
+        var Chart = require('chart.js');
+
+        let weeklyRunGraphContainer = document.createElement("div");
+        let monthlyRunGraphContainer = document.createElement("div");
+        let yearlyRunGraphContainer = document.createElement("div");
+
+        let weeklyRunCanvas = document.createElement("canvas");
+        let monthlyRunCanvas = document.createElement("canvas");
+        let yearlyRunCanvas = document.createElement("canvas");
+
+        weeklyRunCanvas.id = "weeklyRunCanvas";
+        monthlyRunCanvas.id = "monthlyRunCanvas";
+        yearlyRunCanvas.id = "yearlyRunCanvas";
+
+        weeklyRunGraphContainer.appendChild(weeklyRunCanvas);
+        monthlyRunGraphContainer.appendChild(monthlyRunCanvas);
+        yearlyRunGraphContainer.appendChild(yearlyRunCanvas);
+
+        document.getElementById("stravaBotContainer").appendChild(weeklyRunGraphContainer);
+        //document.getElementById("stravaBotContainer").appendChild(monthlyRunGraphContainer);
+        //document.getElementById("stravaBotContainer").appendChild(yearlyRunGraphContainer);
+
+        let weeklyChart = new Chart(weeklyRunCanvas, {
+            type: 'bar',
+            data: {
+                labels: ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'],
+                datasets: [{
+                    data: weeklyStats.weeklyArr,
+                    backgroundColor: 'rgba(0, 0, 0, 1)',
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: true,
+                title: {
+                    display: true,
+                    text: "Weekly Miles",
+                    fontColor: 'rgba(0, 0, 0, 1)',
+                    padding: 15
+                },
+                legend: {
+                    display: false,
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            fontColor: 'rgba(0, 0, 0, 1)'
+                        }
+                    }],
+                    yAxes: [{
+                        display: false
+                    }]
+                },
+            },
+        });
+    }
+
     refreshAccessToken();
+
     //TODO:     renderStravaHtml(); once you make other functions into promises... theres no reason
     //we cant render the HTML after thats done... think about this
 
