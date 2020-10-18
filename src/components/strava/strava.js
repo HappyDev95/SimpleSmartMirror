@@ -53,9 +53,9 @@
                         //maybe we should return a promise?
                         //refresh our token
                         processRefreshTokenResponse(JSON.parse(this.response));
-                        //use getWeeklyStravaData() to send another HTTP req
-                        getWeeklyStravaData();
-                        getMonthlyStravaData();
+                        //getWeeklyStravaData();
+                        //getMonthlyStravaData();
+                        getYearlyStravaData();            //dont use, busted
                     } else {
                         logger.logError("Error sending Strava Refresh Token HTTP request");
                     }                  
@@ -142,6 +142,61 @@
             logger.logError(`Problem calling Strava Api : ${error}`);
             return;
         }
+    }
+
+    async function getYearlyStravaData() {
+        logger.logDebug("getting yearly strava data");
+        try {
+            let beforeTime = new Date();
+            let afterTime = new Date();
+
+            //set time to Jan 1st
+            afterTime.setMonth(0); afterTime.setDate(1); afterTime.setHours(0, 0, 0);
+
+            let before = (beforeTime.getTime() / 1000).toFixed(0);
+            let after = (afterTime.getTime() / 1000).toFixed(0);
+            let page = 1;
+            let endFlag = false;
+
+            while (!endFlag) {
+                let data = await callStravaApi(before, after, page);
+                console.log(data);
+                if (data.length === 0) {
+                    console.log('done');
+                    endFlag = true;
+                } else {
+                    //processYearlyStravaData();
+                    page++;
+                    console.log("data");
+                }
+            }
+        } catch (error) {
+            logger.logError(`Problem calling Strava Api : ${error}`);
+            return;
+        }
+    }
+
+    async function callStravaApi(before, after, page) {
+        return new Promise(function callingApi(resolve) {
+            logger.log("sending request");
+            let request = new XMLHttpRequest();
+            request.open(
+                "GET",
+                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}&page=${page}&per_page=100`,
+                true);
+
+            request.setRequestHeader("Authorization", `Bearer ${shortLivedAccessToken}`);
+            request.onreadystatechange = function waitForApi() {
+                if (this.readyState == XMLHttpRequest.DONE) {
+                    if (this.status == 200) {
+                        resolve(JSON.parse(this.response));
+                    } else {
+                        logger.logError(`Error making HTTP request to ${config.stravaAtheleteEndpoint}`);
+                    }
+                }
+            };
+            request.send();
+        });
     }
 
     function processWeeklyStravaData(data) {
@@ -287,6 +342,17 @@
         renderMonthlyChartHtml();
     }
 
+    function processYearlyStravaData(data) {
+        logger.log("Processing response from Strava Athlete Api");
+
+        if (data === undefined || !Array.isArray(data)) {
+            logger.logDebug("The data returned from the http request was undefined or the data returned was not an array");
+            return;
+        }
+
+        console.log(data);
+    }
+
     function getActivityDay(day) {
         switch (day) {
             case 0:
@@ -414,7 +480,7 @@
             data: {
                 labels: ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'],
                 datasets: [{
-                    data: getWeeklyChartData(),
+                    data: getWeeklyChartMilage(),
                     backgroundColor: 'rgba(0, 0, 0, 1)',
                     borderColor: 'rgba(0, 0, 0, 1)',
                     borderWidth: 1
@@ -500,7 +566,7 @@
         });
     }
 
-    function getWeeklyChartData() {
+    function getWeeklyChartMilage() {
         let outputArr = [0, 0, 0, 0, 0, 0];
         weeklyStats.weeklyArr.forEach(function calcChartData(arrElement) {
             switch (arrElement.day) {
