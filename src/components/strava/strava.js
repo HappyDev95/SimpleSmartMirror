@@ -17,6 +17,13 @@
         monthlyArr: []
     };
 
+    var yearlyStats = {
+        yearlyRunsTotal: null,
+        yearlyMilage: null,
+        yearlyTotalMinutes: null,
+        yearlyArr: []
+    }
+
     function refreshAccessToken() {
         logger.logDebug("refresshing access tokens for strava");
         try {
@@ -53,8 +60,9 @@
                         //maybe we should return a promise?
                         //refresh our token
                         processRefreshTokenResponse(JSON.parse(this.response));
-                        //getWeeklyStravaData();
-                        //getMonthlyStravaData();
+                        renderStrvaHtml();
+                        getWeeklyStravaData();
+                        getMonthlyStravaData();
                         getYearlyStravaData();            //dont use, busted
                     } else {
                         logger.logError("Error sending Strava Refresh Token HTTP request");
@@ -78,7 +86,7 @@
 
             //if Sunday
             if (afterTime.getDay() == 0) {
-                afterTime.setDate(afterTime.getDate() - 6);
+                afterTime.setDate(afterTime.getDate() - 7);
             } else {
                 //if M - Sa
                 afterTime.setDate(afterTime.getDate() - afterTime.getDay() + 1);
@@ -91,7 +99,7 @@
             let request = new XMLHttpRequest();
             request.open(
                 "GET",
-                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}`,
+                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}&per_page=100`,
                 true);
 
             request.setRequestHeader("Authorization", `Bearer ${shortLivedAccessToken}`);
@@ -124,7 +132,7 @@
             let request = new XMLHttpRequest();
             request.open(
                 "GET",
-                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}`,
+                `${config.stravaAtheleteEndpoint}?before=${before}&after=${after}&per_page=100`,
                 true);
 
             request.setRequestHeader("Authorization", `Bearer ${shortLivedAccessToken}`);
@@ -157,15 +165,17 @@
             let after = (afterTime.getTime() / 1000).toFixed(0);
             let page = 1;
             let endFlag = false;
+            let dataArr = [];
 
             while (!endFlag) {
                 let data = await callStravaApi(before, after, page);
+                dataArr = dataArr.concat(data);
                 console.log(data);
                 if (data.length === 0) {
                     console.log('done');
                     endFlag = true;
+                    processYearlyStravaData(dataArr);
                 } else {
-                    //processYearlyStravaData();
                     page++;
                     console.log("data");
                 }
@@ -207,6 +217,9 @@
             return;
         }
 
+        console.log("data is ");
+        console.log(data);
+
         //each element in the array is an activity that was recorded
         let index = 0;
         data.forEach(function parseActivityObj(activity, idx) {
@@ -233,7 +246,7 @@
 
                         if (activity.elapsed_time != undefined) {
                             weeklyStats.weeklyTotalMinutes += (activity.elapsed_time / 60);
-                            weeklyStats.weeklyArr[index - 1].minutes = (activity.elapsed_time / 60);
+                            weeklyStats.weeklyArr[index - 1].minutes += (activity.elapsed_time / 60);
                         }
                     } else {
                         //else this is a day of the week we haven't seen yet
@@ -305,7 +318,7 @@
 
                         if (activity.elapsed_time != undefined) {
                             monthlyStats.monthlyTotalMinutes += (activity.elapsed_time / 60);
-                            monthlyStats.monthlyArr[index - 1].minutes = (activity.elapsed_time / 60);
+                            monthlyStats.monthlyArr[index - 1].minutes += (activity.elapsed_time / 60);
                         }
                     } else {
                         //else this is a day of the week we haven't seen yet
@@ -350,7 +363,66 @@
             return;
         }
 
-        console.log(data);
+        let index = 0;
+        data.forEach(function parseActivityObj(activity, idx) {
+            let activityMonth = {
+                month: null,
+                milage: null,
+                minutes: null
+            }
+
+            if (activity.type.toLowerCase() === "run") {
+                yearlyStats.yearlyRunsTotal += 1;
+
+                console.log("start date : " + activity.start_date);
+
+                activityMonth.month = new Date(activity.start_date).getMonth();
+
+                if (index > 0) {
+                    //if we're still on the same month as the previous entry
+                    if (yearlyStats.yearlyArr[index - 1].month == activityMonth.month) {
+                        if (activity.distance != undefined) {
+                            yearlyStats.yearlyMilage += (activity.distance * 0.000621371);
+                            yearlyStats.yearlyArr[index - 1].milage += (activity.distance * 0.000621371);
+                        }
+
+                        if (activity.elapsed_time != undefined) {
+                            yearlyStats.yearlyTotalMinutes += (activity.elapsed_time / 60);
+                            yearlyStats.yearlyArr[index - 1].minutes += (activity.elapsed_time / 60);
+                        }
+                    } else {
+                        //else this is a month we haven't seen yet
+                        if (activity.distance != undefined) {
+                            yearlyStats.yearlyMilage += (activity.distance * 0.000621371);
+                            activityMonth.milage = (activity.distance * 0.000621371);
+                        }
+
+                        if (activity.elapsed_time != undefined) {
+                            yearlyStats.yearlyTotalMinutes += (activity.elapsed_time / 60);
+                            activityMonth.minutes = (activity.elapsed_time / 60);
+                        }
+                        index++;
+                        yearlyStats.yearlyArr.push(activityMonth);
+                    }
+                } else {
+                    //else this is the first entry in the array
+                    if (activity.distance != undefined) {
+                        yearlyStats.yearlyMilage += (activity.distance * 0.000621371);
+                        activityMonth.milage = (activity.distance * 0.000621371);
+                    }
+
+                    if (activity.elapsed_time != undefined) {
+                        yearlyStats.yearlyTotalMinutes += (activity.elapsed_time / 60);
+                        activityMonth.minutes = (activity.elapsed_time / 60);
+                    }
+                    index++;
+                    yearlyStats.yearlyArr.push(activityMonth);
+                }
+            }
+        });
+
+        console.log(yearlyStats);
+        renderYearlyChartHtml();
     }
 
     function getActivityDay(day) {
@@ -395,20 +467,22 @@
         config.strava.strava_refreshToken = data.refresh_token;
     }
 
-    function renderWeeklyStatsHtml() {
-        logger.logDebug("Rendering the Strava Component HTML DOM");
-
-        let weeklyHeader = document.createElement("h1")
-        weeklyHeader.id = "weeklyHeader";
-        weeklyHeader.innerText = "This Week's Performance"
-        document.getElementById("topRightContainer").appendChild(weeklyHeader);
-
+    function renderStrvaHtml() {
         let stravaTopContainer = document.createElement("div");
         stravaTopContainer.id = "stravaTopContainer";
         let stravaBotContainer = document.createElement("div");
         stravaBotContainer.id = "stravaBotContainer";
         document.getElementById("topRightContainer").appendChild(stravaTopContainer);
         document.getElementById("topRightContainer").appendChild(stravaBotContainer);
+    }
+
+    function renderWeeklyStatsHtml() {
+        logger.logDebug("Rendering the Strava Component HTML DOM");
+
+        let weeklyHeader = document.createElement("h1")
+        weeklyHeader.id = "weeklyHeader";
+        weeklyHeader.innerText = "This Week's Performance"
+        document.getElementById("topRightContainer").prepend(weeklyHeader);
 
         let weeklyActivitiesContainer = document.createElement("div");
         weeklyActivitiesContainer.id = "weeklyDiv";
@@ -491,7 +565,7 @@
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: "Weekly Miles",
+                    text: "Weekly Milage",
                     fontColor: 'rgba(0, 0, 0, 1)',
                     padding: 15
                 },
@@ -508,7 +582,10 @@
                         }
                     }],
                     yAxes: [{
-                        display: false
+                        display: false,
+                        ticks: {
+                            suggestedMin: 0
+                        }
                     }]
                 },
             },
@@ -542,7 +619,7 @@
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: "Monthly Miles",
+                    text: "Monthly Milage",
                     fontColor: 'rgba(0, 0, 0, 1)',
                     padding: 15
                 },
@@ -559,7 +636,65 @@
                         }
                     }],
                     yAxes: [{
-                        display: false
+                        display: false,
+                        ticks: {
+                            suggestedMin: 0
+                        }
+                    }]
+                },
+            },
+        });
+    }
+
+    function renderYearlyChartHtml() {
+        console.log("rendering Yearly chart data");
+        let yearlyRunGraphContainer = document.createElement("div");
+        yearlyRunGraphContainer.id = "yearlyRunGraphContainer";
+        let yearlyRunCanvas = document.createElement("canvas");
+        yearlyRunGraphContainer.appendChild(yearlyRunCanvas);
+        document.getElementById("stravaBotContainer").appendChild(yearlyRunGraphContainer);
+
+        yearlyStats.yearlyArr.sort(function (a, b) {
+            return a.month - b.month;
+        });
+
+        let yearlyChart = new Chart(yearlyRunCanvas, {
+            type: 'bar',
+            data: {
+                labels: [ "Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+                datasets: [{
+                    data: yearlyStats.yearlyArr.map(function (obj) { return obj["milage"]; }),
+                    backgroundColor: 'rgba(0, 0, 0, 1)',
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                title: {
+                    display: true,
+                    text: "Yearly Milage",
+                    fontColor: 'rgba(0, 0, 0, 1)',
+                    padding: 15
+                },
+                legend: {
+                    display: false,
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            fontColor: 'rgba(0, 0, 0, 1)'
+                        }
+                    }],
+                    yAxes: [{
+                        display: false,
+                        ticks: {
+                            suggestedMin: 0
+                        }
                     }]
                 },
             },
@@ -567,7 +702,7 @@
     }
 
     function getWeeklyChartMilage() {
-        let outputArr = [0, 0, 0, 0, 0, 0];
+        let outputArr = [0, 0, 0, 0, 0, 0, 0];
         weeklyStats.weeklyArr.forEach(function calcChartData(arrElement) {
             switch (arrElement.day) {
                 case "Monday":
