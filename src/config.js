@@ -45,9 +45,12 @@ const config = {
         cloudyNight: `${IMG_DIR}/cloudyNight.svg`,
         moon: `${IMG_DIR}/moon.svg`,
         rain: `${IMG_DIR}/rain.svg`,
+        road: `${IMG_DIR}/road.svg`,
+        runner: `${IMG_DIR}/runner.svg`,
         startup: `${IMG_DIR}/startup.svg`,
         sun: `${IMG_DIR}/sun.svg`,
-        sunClouds: `${IMG_DIR}/sunClouds.svg`
+        sunClouds: `${IMG_DIR}/sunClouds.svg`,
+        stopwatch: `${IMG_DIR}/stopwatch.svg`
     },
     months: [
         "January", "February", "March",
@@ -58,6 +61,9 @@ const config = {
     splashScreen: "/src/splash.html",
     strava: {
         //REPLACE ALL CLIENT ID, SECRET, AND REFRESH WITH YOUR OWN
+        //TODO: Calculate before and after. They are unix ephoch timestamps
+        //so figure out a way to get the timestamp for start of week to current
+        //time of day in week
         activities_per_week: "?before=1602590399&after=1602460800",
         client_id: "",
         client_secret: "",

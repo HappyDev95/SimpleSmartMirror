@@ -12,7 +12,7 @@ function createWindow() {
     splash.loadFile(app.getAppPath() + config.splashScreen);
     logger.log(`Path to splash screen is ${app.getAppPath()}${config.splashScreen}`);
 
-    setTimeout(function loadMainWin() {
+        setTimeout(function loadMainWin() {
         // and load the index.html of the app and splash screen
         logger.log(`Path to application is ${app.getAppPath()}${config.index}`);
         mainWindow.loadFile(app.getAppPath() + config.index);
