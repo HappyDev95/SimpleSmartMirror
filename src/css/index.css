@@ -75,6 +75,8 @@ body {
 
 #topRightContainer {
     height: 50%;
+    display: flex;
+    padding-top: 14px;
 }
 
 #centerRightContainer, #botRightContainer {

@@ -90,6 +90,7 @@ function stripAmPm(date) {
  * optional parameter desc 
 */
 function getImageSrc(prop, nightTime, desc) {
+    logger.logDebug(`Getting Image for property --> ${prop}`);
     let retImg;
     switch (prop) {
         case "Clear":
@@ -109,6 +110,9 @@ function getImageSrc(prop, nightTime, desc) {
                 retImg = config.image.clouds;
             }
             return retImg;
+            break;
+        case "Mist":
+            return config.image.mist;
             break;
         case "Rain":
             return config.image.rain;

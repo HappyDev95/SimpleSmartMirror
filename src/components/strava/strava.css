@@ -1,25 +1,28 @@
-#weeklyActivitesImg, #weeklyMilageImg, #weeklyTotalMinutesImg {
-    height: 55px;
+.runActivityImg, .milageActivitiesImg, .minutesActivitesImg {
+    height: 35px;
     width: auto;
 }
 
-#stravaTopContainer {
-    display: flex;
-    justify-content: center;
+.strava-container {
+    width: 33%;
 }
 
-#stravaTopContainer, #stravaBotContainer {
-    height: 50%;
+#weeklyStravaContainer {
+    width: 29%;
+}
+
+.strava-stats-container {
+    height: 25%;
     width: 100%;
-    display: flex
+    display: flex;
 }
 
-#weeklyHeader {
+#performanceHeader {
     margin: 0;
 }
 
 /* Adds undline after header */
-#weeklyHeader::after {
+#performanceHeader::after {
     content: "";
     display: block;
     margin: 0 auto;
@@ -28,34 +31,21 @@
     border-bottom: 2px solid black;
 }
 
-#weeklyDiv {
-    width: 23%;
+.stats-container {
+    width: 33%;
     padding-top: 32px;
 }
 
-#weeklyStatHeader {
-    margin: 0 0 5px 0;
-}
-
-#weeklyStatHeader::after {
-    content: "";
-    display: block;
-    margin: 0 auto;
-    width: 39%;
-    padding-top: 3px;
-    border-bottom: 1px solid black;
-}
-
-#statistic {
+.statistic {
     margin: 0;
-    font-size: 25px
+    font-size: 16px;
+    font-weight: 100;
 }
 
 /*
-    BEGIN STYLING FOR CHARTS
+    STYLING FOR CHARTS
 */
-
-#weeklyRunGraphContainer, #monthlyRunGraphContainer, #yearlyRunGraphContainer {
+.strava-graph-container {
     margin: 0 20px;
     height: 140px;
 }
