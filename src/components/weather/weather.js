@@ -53,6 +53,8 @@
         weather.humidity = parseFloat(data.main.humidity);
         weather.wind = data.wind.speed;
         weather.cloudPercentage = data.clouds.all;
+        weather.sunriseHour = new Date(data.sys.sunrise * 1000).getHours();
+        weather.sunsetHour = new Date(data.sys.sunset * 1000).getHours();
         weather.sunrise = util.convertDateToEst(data.sys.sunrise);
         weather.sunset = util.convertDateToEst(data.sys.sunset);
         weather.weatherType = data.weather[0].main;
@@ -71,10 +73,9 @@
         let weatherNowImg = document.createElement("img");
         weatherNowImg.id = "weatherMainLogo";
 
-        let currTime = new Date()
-            .toLocaleTimeString(config.dateFormat, config.dateFormatOptions);
+        let hour = new Date().getHours();
 
-        if (currTime < weather.sunset) {
+        if (((hour < 12) && (hour <= weather.sunriseHour)) || ((hour > 12) && (hour >= weather.sunsetHour))) {
             weatherNowImg.src = util.getImageSrc(weather.weatherType, false);
         } else {
             weatherNowImg.src = util.getImageSrc(weather.weatherType, true);
@@ -129,9 +130,10 @@
                     break;
             }
 
-            //when property == 'weatherType' or property == "temperature" we dont need
+            //when property == 'weatherType' or ... we dont need
             //to appendChild. If we omit this then an extra <p> will be added to the DOM
-            if ((property != "weatherType") && (property != "temperature")) {
+            if ((property != "weatherType") && (property != "temperature") &&
+                (property != "sunriseHour") && (property != "sunsetHour")) {
                 document.getElementById("weatherContainer").appendChild(newElement);
             }
         }

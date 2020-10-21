@@ -9,8 +9,10 @@ Node Libraries Needed:
  - https://www.strava.com/api/v3/
 
  # File Structure:
-	- Components are placed in /src/components directory.
-		- In each component directory there is a <componentName>.css and <componentName>.html file (note the .css file is optional)
+	- Components are placed in /src/components directory. The structure is as follows:
+		- <componentName>.js 
+		- <componentName>.css
+		- <componentName>.html
 
 	- For global css see /src/css
 	- For global images see /src/images

@@ -1,6 +1,6 @@
 (function () {
     var hourlyArr = [];
-    var currentSunriseSunset = {};
+    var sunriseSunset = {};
 
     function currentWeatherInit() {
         logger.log("Displaying Current Weather component");
@@ -52,8 +52,8 @@
         }
 
         //get sunrise and sunset from 'current' object returned
-        currentSunriseSunset.sunrise = util.convertDateToEst(data.current.sunrise);
-        currentSunriseSunset.sunset = util.convertDateToEst(data.current.sunset);
+        sunriseSunset.sunrise = new Date(data.current.sunrise * 1000);
+        sunriseSunset.sunset = new Date(data.current.sunset * 1000);
 
         //exclude the current hour and get the next 10 hours                                                                     1
         for (let i = 1; i < 12; i++) {
@@ -107,16 +107,15 @@
                         dataCol.innerText += `Cloudiness: ${hourlyObj[property]}%`;
                         break;
                     case "weatherType":
-                        let imgPath;
+                        let hour = hourlyObj["time"];
 
-                        //TODO: This is broken, come back and fix it
-                        if (hourlyObj["time"] < currentSunriseSunset.sunrise) {
-                            imgPath = util.getImageSrc(hourlyObj[property], true);
+                        if (((hour < 12) && (hour <= sunriseSunset.sunrise.getHours()))
+                            || ((hour > 12) && (hour >= sunriseSunset.sunset.getHours()))) {
+                            img.src = util.getImageSrc(hourlyObj[property], true);
                         } else {
-                            imgPath = util.getImageSrc(hourlyObj[property], false, hourlyObj["description"]);
+                            img.src = util.getImageSrc(hourlyObj[property], false, hourlyObj["description"]);
                         }
 
-                        img.src = imgPath;
                         imgCol.appendChild(img);
                         break;
                     case "description":
