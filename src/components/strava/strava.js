@@ -240,11 +240,11 @@
                 if (activity.type.toLowerCase() === "run") {
                     statsObj.runsTotal += 1;
 
-                    activityDay.day = new Date(activity.start_date).getDate();
+                    activityDay.day = new Date(activity.start_date);
 
                     if (index > 0) {
                         //if we're still on the same day as the previous entry
-                        if (statsObj.dataArr[index - 1].day == activityDay.day) {
+                        if (statsObj.dataArr[index - 1].day.getDate() == activityDay.day.getDate()) {
                             if (activity.distance != undefined) {
                                 statsObj.milageTotal += (activity.distance * 0.000621371);
                                 statsObj.dataArr[index - 1].day += (activity.distance * 0.000621371);
@@ -296,14 +296,16 @@
         );
 
         weeklyStats.dataArr.sort(function (a, b) {
-            return a.day - b.day;
+            return a.day.getDate() - b.day.getDate();
         });
 
         let weeklyRunCanvas = document.getElementById("weeklyRunCanvas");
-        let labelArr = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
-        //TODO: Fix this. If you skip a day the remainder of the week will be shifted one to the left. 
-        let dataArr = weeklyStats.dataArr.map(function (obj) { return obj["day"]; });
-        renderChartHtml(weeklyRunCanvas, labelArr, dataArr, "Weekly Milage");
+        let labelArr = ['Su', 'Tu', 'W', 'Th', 'F', 'Sa', 'M'];
+        let tempDataArr = new Array(7).fill(0);
+        weeklyStats.dataArr.forEach(function (value) {
+            tempDataArr[value.day.getDay()] = value.milage;
+        });
+        renderChartHtml(weeklyRunCanvas, labelArr, tempDataArr, "Weekly Milage");
     }
 
     function renderMonthlyStatsHtml() {
@@ -315,11 +317,11 @@
         );
 
         monthlyStats.dataArr.sort(function (a, b) {
-            return a.day - b.day;
+            return a.day.getDate() - b.day.getDate();
         });
 
         let monthlyRunCanvas = document.getElementById("monthlyRunCanvas");
-        let labelArr = monthlyStats.dataArr.map(function (obj) { return obj["day"]; });
+        let labelArr = monthlyStats.dataArr.map(function (obj) { return obj["day"].getDate(); });
         let dataArr = monthlyStats.dataArr.map(function (obj) { return obj["milage"]; });
         renderChartHtml(monthlyRunCanvas, labelArr, dataArr, "Monthly Milage");
     }

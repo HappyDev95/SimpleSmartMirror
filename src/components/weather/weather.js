@@ -76,9 +76,9 @@
         let hour = new Date().getHours();
 
         if (((hour < 12) && (hour <= weather.sunriseHour)) || ((hour > 12) && (hour >= weather.sunsetHour))) {
-            weatherNowImg.src = util.getImageSrc(weather.weatherType, false);
-        } else {
             weatherNowImg.src = util.getImageSrc(weather.weatherType, true);
+        } else {
+            weatherNowImg.src = util.getImageSrc(weather.weatherType, false);
         }
 
         weatherHeaderContainer.appendChild(weatherNowImg);
