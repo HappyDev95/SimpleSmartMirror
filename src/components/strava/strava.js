@@ -211,6 +211,8 @@
 
     function processStravaData(data, statsObj) {
         logger.log("Processing response from Strava Athlete Api");
+        console.log("process starava data");
+        console.log(data);
 
         if (data === undefined || !Array.isArray(data)) {
             logger.logDebug("The data returned from the http request was undefined or the data returned was not an array");
@@ -228,7 +230,6 @@
             statsObj.minutesTotal = 0;
             statsObj.dataArr.push(activityDay);
         } else {
-            //each element in the array is an activity that was recorded
             let index = 0;
             data.forEach(function parseActivityObj(activity, idx) {
                 let activityDay = {
@@ -242,20 +243,35 @@
 
                     activityDay.day = new Date(activity.start_date);
 
-                    if (index > 0) {
-                        //if we're still on the same day as the previous entry
-                        if (statsObj.dataArr[index - 1].day.getDate() == activityDay.day.getDate()) {
-                            if (activity.distance != undefined) {
-                                statsObj.milageTotal += (activity.distance * 0.000621371);
-                                statsObj.dataArr[index - 1].day += (activity.distance * 0.000621371);
-                            }
+                    try {
+                        if (index > 0) {
+                            //if we're still on the same day as the previous entry
+                            if (statsObj.dataArr[index - 1].day == activityDay.day) {
+                                if (activity.distance != undefined) {
+                                    statsObj.milageTotal += (activity.distance * 0.000621371);
+                                    statsObj.dataArr[index - 1].day += (activity.distance * 0.000621371);
+                                }
 
-                            if (activity.elapsed_time != undefined) {
-                                statsObj.minutesTotal += (activity.elapsed_time / 60);
-                                statsObj.dataArr[index - 1].minutes += (activity.elapsed_time / 60);
+                                if (activity.elapsed_time != undefined) {
+                                    statsObj.minutesTotal += (activity.elapsed_time / 60);
+                                    statsObj.dataArr[idx - 1].minutes += (activity.elapsed_time / 60);
+                                }
+                            } else {
+                                //else this is a day of the week we haven't seen yet
+                                if (activity.distance != undefined) {
+                                    statsObj.milageTotal += (activity.distance * 0.000621371);
+                                    activityDay.milage = (activity.distance * 0.000621371);
+                                }
+
+                                if (activity.elapsed_time != undefined) {
+                                    statsObj.minutesTotal += (activity.elapsed_time / 60);
+                                    activityDay.minutes = (activity.elapsed_time / 60);
+                                }
+                                statsObj.dataArr.push(activityDay);
+                                index++;
                             }
                         } else {
-                            //else this is a day of the week we haven't seen yet
+                            //else this is the first entry in the array
                             if (activity.distance != undefined) {
                                 statsObj.milageTotal += (activity.distance * 0.000621371);
                                 activityDay.milage = (activity.distance * 0.000621371);
@@ -265,22 +281,12 @@
                                 statsObj.minutesTotal += (activity.elapsed_time / 60);
                                 activityDay.minutes = (activity.elapsed_time / 60);
                             }
-                            index++;
                             statsObj.dataArr.push(activityDay);
+                            index++
                         }
-                    } else {
-                        //else this is the first entry in the array
-                        if (activity.distance != undefined) {
-                            statsObj.milageTotal += (activity.distance * 0.000621371);
-                            activityDay.milage = (activity.distance * 0.000621371);
-                        }
-
-                        if (activity.elapsed_time != undefined) {
-                            statsObj.minutesTotal += (activity.elapsed_time / 60);
-                            activityDay.minutes = (activity.elapsed_time / 60);
-                        }
-                        index++;
-                        statsObj.dataArr.push(activityDay);
+                    } catch (err) {
+                        logger.logError(err);
+                        logger.logDebug(`Activity Day = ${activityDay}, current index = ${index}, current statistics object = ${statsObj}`);
                     }
                 }
             });

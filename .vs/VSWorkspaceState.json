@@ -4,9 +4,10 @@
     "\\src",
     "\\src\\components",
     "\\src\\components\\currentWeather",
+    "\\src\\components\\strava",
     "\\src\\components\\weather",
     "\\src\\js"
   ],
-  "SelectedNode": "\\src\\components\\weather\\weather.js",
+  "SelectedNode": "\\src\\components\\strava\\strava.js",
   "PreviewInSolutionExplorer": false
 }
