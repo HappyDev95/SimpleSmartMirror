@@ -229,7 +229,7 @@
             statsObj.dataArr.push(activityDay);
         } else {
             let index = 0;
-            data.forEach(function parseActivityObj(activity, idx) {
+            data.forEach(function parseActivityObj(activity) {
                 let activityDay = {
                     day: null,
                     milage: null,
@@ -252,7 +252,7 @@
 
                                 if (activity.elapsed_time != undefined) {
                                     statsObj.minutesTotal += (activity.elapsed_time / 60);
-                                    statsObj.dataArr[idx - 1].minutes += (activity.elapsed_time / 60);
+                                    statsObj.dataArr[index - 1].minutes += (activity.elapsed_time / 60);
                                 }
                             } else {
                                 //else this is a day of the week we haven't seen yet
@@ -284,7 +284,7 @@
                         }
                     } catch (err) {
                         logger.logError(err);
-                        logger.logDebug(`Activity Day = ${activityDay}, current index = ${index}, current statistics object = ${statsObj}`);
+                        logger.logDebug(`Activity Day = ${activityDay.day}`);
                     }
                 }
             });
