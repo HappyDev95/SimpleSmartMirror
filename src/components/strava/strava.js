@@ -211,8 +211,6 @@
 
     function processStravaData(data, statsObj) {
         logger.log("Processing response from Strava Athlete Api");
-        console.log("process starava data");
-        console.log(data);
 
         if (data === undefined || !Array.isArray(data)) {
             logger.logDebug("The data returned from the http request was undefined or the data returned was not an array");
@@ -246,10 +244,10 @@
                     try {
                         if (index > 0) {
                             //if we're still on the same day as the previous entry
-                            if (statsObj.dataArr[index - 1].day == activityDay.day) {
+                            if (statsObj.dataArr[index - 1].day.getDay() == activityDay.day.getDay()) {
                                 if (activity.distance != undefined) {
                                     statsObj.milageTotal += (activity.distance * 0.000621371);
-                                    statsObj.dataArr[index - 1].day += (activity.distance * 0.000621371);
+                                    statsObj.dataArr[index - 1].milage += (activity.distance * 0.000621371);
                                 }
 
                                 if (activity.elapsed_time != undefined) {
@@ -306,10 +304,15 @@
         });
 
         let weeklyRunCanvas = document.getElementById("weeklyRunCanvas");
-        let labelArr = ['Su', 'Tu', 'W', 'Th', 'F', 'Sa', 'M'];
+        let labelArr = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
         let tempDataArr = new Array(7).fill(0);
-        weeklyStats.dataArr.forEach(function (value) {
-            tempDataArr[value.day.getDay()] = value.milage;
+        weeklyStats.dataArr.forEach(function assignDayOfWeek(value) {
+            //set Sunday to be last day of week, not first. I seriously dislike that Sunday is considered the beginning of the week
+            if (value.day.getDay() == 0) {
+                tempDataArr[6] = value.milage
+            } else {
+                tempDataArr[value.day.getDay() - 1] = value.milage;
+            }
         });
         renderChartHtml(weeklyRunCanvas, labelArr, tempDataArr, "Weekly Milage");
     }
