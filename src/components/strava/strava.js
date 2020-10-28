@@ -586,7 +586,4 @@
     }
 
     refreshAccessToken();
-
-    //TODO:     renderStravaHtml(); once you make other functions into promises... theres no reason
-    //we cant render the HTML after thats done... think about this
 })();
