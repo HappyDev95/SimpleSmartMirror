@@ -7,7 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 
 #User workspace
-*.suo
+.suo
 slnx.sqlite
 VSWorkspaceState.json
 
