@@ -14,7 +14,8 @@
 
         setupCalendarHtml();
 
-        let firstDay = (new Date(month, year)).getDay();
+        let firstDay = (new Date(year, month)).getDay();
+        
         let calendar = document.getElementById("calendar-body");
         calendarHeader.innerText = config.months[month] + " " + year;
 

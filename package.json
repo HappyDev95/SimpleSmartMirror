@@ -4,7 +4,8 @@
   "description": "smart mirror project",
   "main": "src/js/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "electron . debug"
   },
   "author": "HappyDev95",
   "license": "MIT",

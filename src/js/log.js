@@ -26,7 +26,6 @@ function logInfo(msg) {
     myConsole.error('Info: ' + msg);
 }
 
-
 function logDebug(msg) {
     if (msg === undefined || msg === null)
         return;
